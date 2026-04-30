@@ -10,6 +10,13 @@ return {
   ---@type Gitsigns.Config
   ---@diagnostic disable-next-line: missing-fields
   opts = {
+    signs = {
+      add          = { text = '+' }, ---@diagnostic disable-line: missing-fields
+      change       = { text = '~' }, ---@diagnostic disable-line: missing-fields
+      delete       = { text = '_' }, ---@diagnostic disable-line: missing-fields
+      topdelete    = { text = '‾' }, ---@diagnostic disable-line: missing-fields
+      changedelete = { text = '~' }, ---@diagnostic disable-line: missing-fields
+    },
     on_attach = function(bufnr)
       local gitsigns = require 'gitsigns'
 
@@ -36,27 +43,29 @@ return {
         end
       end, { desc = 'Jump to previous git [c]hange' })
 
-      -- Actions
-      -- visual mode
+      -- Actions (visual)
       map('v', '<leader>hs', function() gitsigns.stage_hunk { vim.fn.line '.', vim.fn.line 'v' } end, { desc = 'git [s]tage hunk' })
       map('v', '<leader>hr', function() gitsigns.reset_hunk { vim.fn.line '.', vim.fn.line 'v' } end, { desc = 'git [r]eset hunk' })
-      -- normal mode
-      map('n', '<leader>hs', gitsigns.stage_hunk, { desc = 'git [s]tage hunk' })
-      map('n', '<leader>hr', gitsigns.reset_hunk, { desc = 'git [r]eset hunk' })
-      map('n', '<leader>hS', gitsigns.stage_buffer, { desc = 'git [S]tage buffer' })
-      map('n', '<leader>hR', gitsigns.reset_buffer, { desc = 'git [R]eset buffer' })
-      map('n', '<leader>hp', gitsigns.preview_hunk, { desc = 'git [p]review hunk' })
+
+      -- Actions (normal)
+      map('n', '<leader>hs', gitsigns.stage_hunk,          { desc = 'git [s]tage hunk' })
+      map('n', '<leader>hr', gitsigns.reset_hunk,          { desc = 'git [r]eset hunk' })
+      map('n', '<leader>hS', gitsigns.stage_buffer,        { desc = 'git [S]tage buffer' })
+      map('n', '<leader>hR', gitsigns.reset_buffer,        { desc = 'git [R]eset buffer' })
+      map('n', '<leader>hu', gitsigns.undo_stage_hunk,     { desc = 'git [u]ndo stage hunk' })
+      map('n', '<leader>hp', gitsigns.preview_hunk,        { desc = 'git [p]review hunk' })
       map('n', '<leader>hi', gitsigns.preview_hunk_inline, { desc = 'git preview hunk [i]nline' })
       map('n', '<leader>hb', function() gitsigns.blame_line { full = true } end, { desc = 'git [b]lame line' })
-      map('n', '<leader>hd', gitsigns.diffthis, { desc = 'git [d]iff against index' })
+      map('n', '<leader>hd', gitsigns.diffthis,            { desc = 'git [d]iff against index' })
       map('n', '<leader>hD', function() gitsigns.diffthis '@' end, { desc = 'git [D]iff against last commit' })
-      map('n', '<leader>hQ', function() gitsigns.setqflist 'all' end)
-      map('n', '<leader>hq', gitsigns.setqflist)
+      map('n', '<leader>hq', gitsigns.setqflist,                      { desc = 'git hunks -> [q]uickfix (buffer)' })
+      map('n', '<leader>hQ', function() gitsigns.setqflist 'all' end, { desc = 'git hunks -> [Q]uickfix (all)' })
+
       -- Toggles
       map('n', '<leader>tb', gitsigns.toggle_current_line_blame, { desc = '[T]oggle git show [b]lame line' })
-      map('n', '<leader>tw', gitsigns.toggle_word_diff)
+      map('n', '<leader>tw', gitsigns.toggle_word_diff,          { desc = '[T]oggle git [w]ord diff' })
 
-      -- Text object
+      -- Text object: operate on a hunk with `ih`
       map({ 'o', 'x' }, 'ih', gitsigns.select_hunk)
     end,
   },
