@@ -71,7 +71,6 @@ I hope you enjoy your Neovim journey,
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
--- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
@@ -284,7 +283,7 @@ require('lazy').setup({
   },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
-  --
+
   -- This is often very useful to both group configuration, as well as handle
   -- lazy loading plugins that don't need to be loaded immediately at startup.
   --
@@ -304,7 +303,6 @@ require('lazy').setup({
     ---@type wk.Opts
     ---@diagnostic disable-next-line: missing-fields
     opts = {
-      -- delay between pressing a key and opening which-key (milliseconds)
       delay = 0,
       icons = { mappings = vim.g.have_nerd_font },
 
@@ -473,11 +471,11 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sn', function() builtin.find_files { cwd = vim.fn.stdpath 'config' } end, { desc = '[S]earch [N]eovim files' })
 
       -- Git pickers
-      vim.keymap.set('n', '<leader>gs', builtin.git_status,   { desc = '[G]it [s]tatus' })
-      vim.keymap.set('n', '<leader>gc', builtin.git_commits,  { desc = '[G]it [c]ommits (repo)' })
+      vim.keymap.set('n', '<leader>gs', builtin.git_status, { desc = '[G]it [s]tatus' })
+      vim.keymap.set('n', '<leader>gc', builtin.git_commits, { desc = '[G]it [c]ommits (repo)' })
       vim.keymap.set('n', '<leader>gC', builtin.git_bcommits, { desc = '[G]it [C]ommits (buffer)' })
       vim.keymap.set('n', '<leader>gb', builtin.git_branches, { desc = '[G]it [b]ranches' })
-      vim.keymap.set('n', '<leader>gt', builtin.git_stash,    { desc = '[G]it s[t]ash' })
+      vim.keymap.set('n', '<leader>gt', builtin.git_stash, { desc = '[G]it s[t]ash' })
     end,
   },
 
@@ -604,7 +602,7 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        pyright = {},
         -- rust_analyzer = {},
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -612,7 +610,7 @@ require('lazy').setup({
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         ts_ls = {},
-
+        cssls = {},
         stylua = {}, -- Used to format Lua code
 
         -- I added these after adding them in :Mason to see if they work by default?
@@ -620,6 +618,7 @@ require('lazy').setup({
         jsonls = {},
         eslint = {},
         emmet_ls = {},
+        emmet_language_server = {},
         yamlls = {},
 
         -- Special Lua Config, as recommended by neovim help docs
@@ -696,7 +695,7 @@ require('lazy').setup({
           return nil
         else
           return {
-            timeout_ms = 500,
+            timeout_ms = 10000,
             lsp_format = 'fallback',
           }
         end
@@ -810,9 +809,6 @@ require('lazy').setup({
     },
   },
 
-  -- Colorschemes are managed in lua/custom/plugins/colorscheme.lua
-  -- Run :ThemeSync to re-apply after switching your Ghostty theme
-
   -- Highlight todo, notes, etc in comments
   {
     'folke/todo-comments.nvim',
@@ -884,7 +880,7 @@ require('lazy').setup({
         -- enables treesitter based folds
         -- for more info on folds see `:help folds`
         vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-        vim.wo.foldmethod = 'expr'
+        vim.wo.foldmethod = 'indent'
 
         -- enables treesitter based indentation
         vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
@@ -962,23 +958,25 @@ require('lazy').setup({
     },
   },
 })
-
+-- Colorschemes are managed in lua/custom/plugins/colorscheme.lua
+-- Run :ThemeSync to re-apply after switching your Ghostty theme
 -- [[ Ghostty theme sync ]]
 local function apply_ghostty_theme()
-  local ghostty_config = vim.fn.expand '~/Library/Application Support/com.mitchellh.ghostty/config'
+  local ghostty_config = vim.fn.expand '~/Library/Application Support/com.mitchellh.ghostty/config*'
   local ok, lines = pcall(vim.fn.readfile, ghostty_config)
-  if not ok then
-    vim.cmd 'colorscheme rose-pine'
-    return
-  end
+  -- if not ok then
+  --   print('Error reading ghostty config. Setting fallback theme.')
+  --   vim.cmd 'colorscheme 0x96f'
+  --   return
+  -- end
 
   local theme_map = {
-    ['0x96f']     = '0x96f',
-    ['rose-pine'] = 'rose-pine',
-    ['ayu']       = 'ayu-dark',
+    ['0x96f'] = '0x96f',
+    ['Rose Pine'] = 'rose-pine',
+    ['ayu'] = 'ayu-dark',
   }
 
-  for _, line in ipairs(lines) do
+  for _, line in pairs(lines) do
     local theme = line:match '^%s*theme%s*=%s*(.-)%s*$'
     if theme then
       local nvim_theme = theme_map[theme]
@@ -986,13 +984,13 @@ local function apply_ghostty_theme()
         vim.cmd('colorscheme ' .. nvim_theme)
       else
         vim.notify('ThemeSync: no Neovim mapping for Ghostty theme "' .. theme .. '"', vim.log.levels.WARN)
-        vim.cmd 'colorscheme rose-pine'
+        vim.cmd 'colorscheme 0x96f'
       end
       return
     end
   end
 
-  vim.cmd 'colorscheme rose-pine'
+  vim.cmd 'colorscheme 0x96f'
 end
 
 apply_ghostty_theme()

@@ -16,6 +16,7 @@ return {
       -- Columns shown in the oil buffer
       columns = { 'icon' },
       -- Keymaps inside oil buffers (these are buffer-local)
+      delete_to_trash = true,
       keymaps = {
         ['g?'] = { 'actions.show_help', mode = 'n' },
         ['<CR>'] = 'actions.select',
