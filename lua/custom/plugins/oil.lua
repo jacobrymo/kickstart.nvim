@@ -15,8 +15,9 @@ return {
       default_file_explorer = true,
       -- Columns shown in the oil buffer
       columns = { 'icon' },
+      delete_to_trash = false,
+      watch_for_changes = true,
       -- Keymaps inside oil buffers (these are buffer-local)
-      delete_to_trash = true,
       keymaps = {
         ['g?'] = { 'actions.show_help', mode = 'n' },
         ['<CR>'] = 'actions.select',

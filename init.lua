@@ -135,7 +135,12 @@ vim.o.splitbelow = true
 --   See `:help lua-options`
 --   and `:help lua-guide-options`
 vim.o.list = true
-vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+-- vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+vim.o.fillchars = 'eob: '
+
+-- Conceal level modified for Obsidian features to work
+--@source https://github.com/epwalsh/obsidian.nvim#concealing-characters
+vim.opt.conceallevel = 2
 
 -- Preview substitutions live, as you type!
 vim.o.inccommand = 'split'
@@ -683,7 +688,7 @@ require('lazy').setup({
       },
     },
     ---@module 'conform'
-    ---@type conform.setupOpts
+    ---@type 'conform.setupOpts'
     opts = {
       notify_on_error = false,
       format_on_save = function(bufnr)
@@ -961,43 +966,44 @@ require('lazy').setup({
 -- Colorschemes are managed in lua/custom/plugins/colorscheme.lua
 -- Run :ThemeSync to re-apply after switching your Ghostty theme
 -- [[ Ghostty theme sync ]]
-local function apply_ghostty_theme()
-  local ghostty_config = vim.fn.expand '~/Library/Application Support/com.mitchellh.ghostty/config*'
-  local ok, lines = pcall(vim.fn.readfile, ghostty_config)
-  -- if not ok then
-  --   print('Error reading ghostty config. Setting fallback theme.')
-  --   vim.cmd 'colorscheme 0x96f'
-  --   return
-  -- end
-
-  local theme_map = {
-    ['0x96f'] = '0x96f',
-    ['Rose Pine'] = 'rose-pine',
-    ['ayu'] = 'ayu-dark',
-  }
-
-  for _, line in pairs(lines) do
-    local theme = line:match '^%s*theme%s*=%s*(.-)%s*$'
-    if theme then
-      local nvim_theme = theme_map[theme]
-      if nvim_theme then
-        vim.cmd('colorscheme ' .. nvim_theme)
-      else
-        vim.notify('ThemeSync: no Neovim mapping for Ghostty theme "' .. theme .. '"', vim.log.levels.WARN)
-        vim.cmd 'colorscheme 0x96f'
-      end
-      return
-    end
-  end
-
-  vim.cmd 'colorscheme 0x96f'
-end
-
-apply_ghostty_theme()
-
-vim.api.nvim_create_user_command('ThemeSync', apply_ghostty_theme, {
-  desc = 'Re-sync Neovim colorscheme from Ghostty config',
-})
+-- local function apply_ghostty_theme()
+--   local ghostty_config = vim.fn.expand '~/Library/Application Support/com.mitchellh.ghostty/config*'
+--   local ok, lines = pcall(vim.fn.readfile, ghostty_config)
+--   if not ok then
+--     print 'Error reading ghostty config. Setting fallback theme.'
+--     vim.cmd 'colorscheme 0x96f'
+--     return
+--   end
+--
+--   local theme_map = {
+--     ['0x96f'] = '0x96f',
+--     ['Rose Pine'] = 'rose-pine',
+--     ['Ayu Mirage'] = 'neovim-ayu',
+--     ['Nvim Dark'] = ,
+--   }
+--
+--   for _, line in pairs(lines) do
+--     local theme = line:match '^%s*theme%s*=%s*(.-)%s*$'
+--     if theme then
+--       local nvim_theme = theme_map[theme]
+--       if nvim_theme then
+--         vim.cmd('colorscheme ' .. nvim_theme)
+--       else
+--         vim.notify('ThemeSync: no Neovim mapping for Ghostty theme "' .. theme .. '"', vim.log.levels.WARN)
+--         vim.cmd 'colorscheme 0x96f'
+--       end
+--       return
+--     end
+--   end
+--
+--   vim.cmd 'colorscheme 0x96f'
+-- end
+--
+-- apply_ghostty_theme()
+--
+-- vim.api.nvim_create_user_command('ThemeSync', apply_ghostty_theme, {
+--   desc = 'Re-sync Neovim colorscheme from Ghostty config',
+-- })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
